@@ -96,28 +96,29 @@ const drawPaddle = () => {
 }
 
 const colorBricks = r => {
-  if (r === 0) {
-    return '#CC00FF'
-  } else if (r === 1) {
-    return '#8000FF'
-  } else if (r === 2) {
-    return '#0000FF'
-  } else if (r === 3) {
-    return '#0080FF'
-  } else if (r === 4) {
-    return '#00FFFF'
-  } else if (r === 5) {
-    return '#00FF80'
-  } else if (r === 6) {
-    return '#00FF00'
-  } else if (r === 7) {
-    return '#80FF00'
-  } else if (r === 8) {
-    return '#FFFF00'
-  } else if (r === 9) {
-    return '#FF8000'
-  } else {
-    return '#FF0000'
+  switch (r) {
+    case 0:
+      return '#CC00FF'
+    case 1:
+      return '#8000FF'
+    case 2:
+      return '#0000FF'
+    case 3:
+      return '#0080FF'
+    case 4:
+      return '#00FFFF'
+    case 5:
+      return '#00FF80'
+    case 6:
+      return '#00FF00'
+    case 7:
+      return '#80FF00'
+    case 8:
+      return '#FFFF00'
+    case 9:
+      return '#FF8000'
+    case 10:
+      return '#FF0000'
   }
 }
 

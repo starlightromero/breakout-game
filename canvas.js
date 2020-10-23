@@ -6,13 +6,12 @@ const canvas = document.getElementById('myCanvas')
 const ctx = canvas.getContext('2d')
 const ballRadius = 10
 let ballColor = '#dadada'
-let x = canvas.width / 2
-let y = canvas.height - 30
-let ballSpeed = 3
+let ballSpeed = 0
 let dx = 1 * ballSpeed
 let dy = -1 * ballSpeed
+let paddleColor = '#dadada'
 const paddleHeight = 10
-const paddleWidth = 75
+let paddleWidth = 75
 let paddleX = (canvas.width - paddleWidth) / 2
 let rightPressed = false
 let leftPressed = false
@@ -23,8 +22,11 @@ const brickHeight = 20
 const brickPadding = 10
 const brickOffsetTop = 30
 const brickOffsetLeft = 30
+let x = canvas.width / 2
+let y = canvas.height - paddleHeight - ballRadius
 let score = 0
 let lives = 3
+let gameOver = false
 
 const bricks = []
 for (let c = 0; c < brickColumnCount; c++) {
@@ -39,6 +41,15 @@ const keyDownHandler = e => {
     rightPressed = true
   } else if (e.key === 'Left' || e.key === 'ArrowLeft') {
     leftPressed = true
+  } else if (e.keyCode === 32 && ballSpeed === 0) {
+    if (ballSpeed === 0) {
+      ballSpeed = 3
+      dx = 1 * ballSpeed
+      dy = -1 * ballSpeed
+      paddleX = x - ballRadius / 2 + paddleWidth / 2
+    } else if (gameOver) {
+      document.location.reload()
+    }
   }
 }
 
@@ -54,12 +65,29 @@ const mouseMoveHandler = e => {
   const relativeX = e.clientX - canvas.offsetLeft
   if (relativeX > 0 && relativeX < canvas.width) {
     paddleX = relativeX - paddleWidth / 2
+    if (ballSpeed === 0) {
+      x = relativeX
+    }
   }
 }
 
 document.addEventListener('keydown', keyDownHandler, false)
 document.addEventListener('keyup', keyUpHandler, false)
 document.addEventListener('mousemove', mouseMoveHandler, false)
+document.addEventListener('click', () => {
+  if (ballSpeed === 0) {
+    ballSpeed = 3
+    dx = 1 * ballSpeed
+    dy = -1 * ballSpeed
+  } else if (gameOver) {
+    document.location.reload()
+  }
+})
+
+const resetGame = () => {
+  ballColor = '#dadada'
+  paddleColor = '#dadada'
+}
 
 const collisionDetection = () => {
   for (let c = 0; c < brickColumnCount; c++) {
@@ -92,7 +120,7 @@ const drawBall = () => {
 const drawPaddle = () => {
   ctx.beginPath()
   ctx.rect(paddleX, canvas.height - paddleHeight, paddleWidth, paddleHeight)
-  ctx.fillStyle = '#dadada'
+  ctx.fillStyle = paddleColor
   ctx.fill()
   ctx.closePath()
 }
@@ -155,49 +183,109 @@ const drawLives = () => {
   ctx.fillText('Lives: ' + lives, canvas.width - 65, 20)
 }
 
-const draw = () => {
-  ctx.clearRect(0, 0, canvas.width, canvas.height)
-  drawBricks()
-  drawBall()
-  drawPaddle()
-  drawScore()
-  drawLives()
-  collisionDetection()
-
-  if (x + dx > canvas.width - ballRadius || x + dx < ballRadius) {
-    dx = -dx
+const checkPowerUp = () => {
+  switch (paddleColor) {
+    case '#CC00FF':
+      ballSpeed++
+      break
+    case '#8000FF':
+      ballSpeed++
+      break
+    case '#0000FF':
+      ballSpeed--
+      break
+    case '#0080FF':
+      paddleWidth += 20
+      break
+    case '#00FFFF':
+      paddleWidth -= 10
+      break
+    case '#00FF80':
+      paddleWidth += 10
+      break
+    case '#00FF00':
+      paddleWidth -= 5
+      break
+    case '#80FF00':
+      paddleWidth += 5
+      break
+    case '#FFFF00':
+      ballSpeed--
+      break
+    case '#FF8000':
+      paddleWidth += 5
+      break
+    case '#FF0000':
+      ballSpeed++
+      break
   }
-  if (y + dy < ballRadius) {
-    dy = -dy
-  } else if (y + dy > canvas.height - ballRadius) {
-    if (x > paddleX && x < paddleX + paddleWidth) {
-      if (y = y - paddleHeight) {
+  console.log(ballSpeed)
+  dx = 1 * ballSpeed
+  dy = -1 * ballSpeed
+}
+
+const draw = () => {
+  if (!gameOver) {
+    ctx.clearRect(0, 0, canvas.width, canvas.height)
+    drawBricks()
+    drawBall()
+    drawPaddle()
+    drawScore()
+    drawLives()
+    collisionDetection()
+
+    if (x + dx > canvas.width - ballRadius || x + dx < ballRadius) {
+      // ball hits wall
+      dx = -dx
+      ballColor = '#dadada'
+    }
+    if (y + dy < ballRadius) {
+      // ball hits top
+      dy = -dy
+    } else if (y + ballRadius >= canvas.height - paddleHeight && ballSpeed > 0) {
+      if (x > paddleX && x + ballRadius < paddleX + paddleWidth) {
+        // ball hits paddle
         dy = -dy
-      }
-    } else {
-      lives--
-      if (!lives) {
-        alert('GAME OVER')
-        document.location.reload()
+        paddleColor = ballColor
+        checkPowerUp()
       } else {
-        x = canvas.width / 2
-        y = canvas.height - 30
-        dx = 2
-        dy = -2
-        paddleX = (canvas.width - paddleWidth) / 2
+        lives--
+        resetGame()
+        // ballSpeed = 0
+        if (!lives) {
+          ctx.beginPath()
+          ctx.font = '130px Helvetica'
+          ctx.fillStyle = '#dadada'
+          const gameoverString = 'GAMEOVER'
+          const gameoverWidth = ctx.measureText(gameoverString).width
+          ctx.fillText(gameoverString, canvas.width / 2 - gameoverWidth / 2, canvas.height / 2)
+          gameOver = true
+        } else {
+          x = canvas.width / 2
+          y = canvas.height - 30
+          dx = 2
+          dy = -2
+          paddleX = (canvas.width - paddleWidth) / 2
+        }
       }
     }
-  }
 
-  if (rightPressed && paddleX < canvas.width - paddleWidth) {
-    paddleX += 7
-  } else if (leftPressed && paddleX > 0) {
-    paddleX -= 7
-  }
+    if (rightPressed && paddleX < canvas.width - paddleWidth) {
+      paddleX += 7
+      if (ballSpeed === 0) {
+        x += 7
+      }
+    } else if (leftPressed && paddleX > 0) {
+      paddleX -= 7
+      if (ballSpeed === 0) {
+        x -= 7
+      }
+    }
 
-  x += dx
-  y += dy
-  requestAnimationFrame(draw)
+    x += dx
+    y += dy
+    requestAnimationFrame(draw)
+  }
 }
 
 draw()

@@ -95,6 +95,32 @@ const drawPaddle = () => {
   ctx.closePath()
 }
 
+const colorBricks = r => {
+  if (r === 0) {
+    return '#CC00FF'
+  } else if (r === 1) {
+    return '#8000FF'
+  } else if (r === 2) {
+    return '#0000FF'
+  } else if (r === 3) {
+    return '#0080FF'
+  } else if (r === 4) {
+    return '#00FFFF'
+  } else if (r === 5) {
+    return '#00FF80'
+  } else if (r === 6) {
+    return '#00FF00'
+  } else if (r === 7) {
+    return '#80FF00'
+  } else if (r === 8) {
+    return '#FFFF00'
+  } else if (r === 9) {
+    return '#FF8000'
+  } else {
+    return '#FF0000'
+  }
+}
+
 const drawBricks = () => {
   for (let c = 0; c < brickColumnCount; c++) {
     for (let r = 0; r < brickRowCount; r++) {
@@ -105,29 +131,7 @@ const drawBricks = () => {
         bricks[c][r].y = brickY
         ctx.beginPath()
         ctx.rect(brickX, brickY, brickWidth, brickHeight)
-        if (r === 0) {
-          ctx.fillStyle = '#CC00FF'
-        } else if (r === 1) {
-          ctx.fillStyle = '#8000FF'
-        } else if (r === 2) {
-          ctx.fillStyle = '#0000FF'
-        } else if (r === 3) {
-          ctx.fillStyle = '#0080FF'
-        } else if (r === 4) {
-          ctx.fillStyle = '#00FFFF'
-        } else if (r === 5) {
-          ctx.fillStyle = '#00FF80'
-        } else if (r === 6) {
-          ctx.fillStyle = '#00FF00'
-        } else if (r === 7) {
-          ctx.fillStyle = '#80FF00'
-        } else if (r === 8) {
-          ctx.fillStyle = '#FFFF00'
-        } else if (r === 9) {
-          ctx.fillStyle = '#FF8000'
-        } else {
-          ctx.fillStyle = '#FF0000'
-        }
+        ctx.fillStyle = colorBricks(r)
         ctx.fill()
         ctx.closePath()
       }

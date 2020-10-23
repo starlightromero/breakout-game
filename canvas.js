@@ -15,7 +15,7 @@ const paddleWidth = 75
 let paddleX = (canvas.width - paddleWidth) / 2
 let rightPressed = false
 let leftPressed = false
-const brickRowCount = 10
+const brickRowCount = 11
 const brickColumnCount = 14
 const brickWidth = 75
 const brickHeight = 20
@@ -82,7 +82,7 @@ function collisionDetection () {
 function drawBall () {
   ctx.beginPath()
   ctx.arc(x, y, ballRadius, 0, Math.PI * 2)
-  ctx.fillStyle = '#0095DD'
+  ctx.fillStyle = '#dadada'
   ctx.fill()
   ctx.closePath()
 }
@@ -90,9 +90,23 @@ function drawBall () {
 function drawPaddle () {
   ctx.beginPath()
   ctx.rect(paddleX, canvas.height - paddleHeight, paddleWidth, paddleHeight)
-  ctx.fillStyle = '#0095DD'
+  ctx.fillStyle = '#dadada'
   ctx.fill()
   ctx.closePath()
+}
+
+const colorBricks = () => {
+  if (bricks[c][r].y < 40) {
+    ctx.fillStyle = '#FF0000'
+  } else if (bricks[c][r].y < 80) {
+    ctx.fillStyle = '#FF9300'
+  } else if (bricks[c][r].y < 120) {
+    ctx.fillStyle = '#FFFF00'
+  } else if (bricks[c][r].y < 140) {
+    ctx.fillStyle = '#00FF00'
+  } else {
+    ctx.fillStyle = '#0000FF'
+  }
 }
 
 function drawBricks () {
@@ -105,7 +119,29 @@ function drawBricks () {
         bricks[c][r].y = brickY
         ctx.beginPath()
         ctx.rect(brickX, brickY, brickWidth, brickHeight)
-        ctx.fillStyle = '#0095DD'
+        if (bricks[c][r].y < 50) {
+          ctx.fillStyle = '#CC00FF'
+        } else if (bricks[c][r].y < 80) {
+          ctx.fillStyle = '#8000FF'
+        } else if (bricks[c][r].y < 110) {
+          ctx.fillStyle = '#0000FF'
+        } else if (bricks[c][r].y < 140) {
+          ctx.fillStyle = '#0080FF'
+        } else if (bricks[c][r].y < 170) {
+          ctx.fillStyle = '#00FFFF'
+        } else if (bricks[c][r].y < 200) {
+          ctx.fillStyle = '#00FF80'
+        } else if (bricks[c][r].y < 230) {
+          ctx.fillStyle = '#00FF00'
+        } else if (bricks[c][r].y < 260) {
+          ctx.fillStyle = '#80FF00'
+        } else if (bricks[c][r].y < 290) {
+          ctx.fillStyle = '#FFFF00'
+        } else if (bricks[c][r].y < 320) {
+          ctx.fillStyle = '#FF8000'
+        } else {
+          ctx.fillStyle = '#FF0000'
+        }
         ctx.fill()
         ctx.closePath()
       }
@@ -115,13 +151,13 @@ function drawBricks () {
 
 function drawScore () {
   ctx.font = '16px Arial'
-  ctx.fillStyle = '#0095DD'
+  ctx.fillStyle = '#dadada'
   ctx.fillText('Score: ' + score, 8, 20)
 }
 
 function drawLives () {
   ctx.font = '16px Arial'
-  ctx.fillStyle = '#0095DD'
+  ctx.fillStyle = '#dadada'
   ctx.fillText('Lives: ' + lives, canvas.width - 65, 20)
 }
 

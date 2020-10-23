@@ -87,6 +87,9 @@ document.addEventListener('click', () => {
 const resetGame = () => {
   ballColor = '#dadada'
   paddleColor = '#dadada'
+  ballSpeed = 3
+  dx = 1 * ballSpeed
+  dy = -1 * ballSpeed
 }
 
 const collisionDetection = () => {
@@ -220,8 +223,16 @@ const checkPowerUp = () => {
       break
   }
   console.log(ballSpeed)
-  dx = 1 * ballSpeed
-  dy = -1 * ballSpeed
+  if (dx > 0) {
+    dx = 1 * ballSpeed
+  } else {
+    dx = -1 * ballSpeed
+  }
+  if (dy < 0) {
+    dy = -1 * ballSpeed
+  } else {
+    dy = 1 * ballSpeed
+  }
 }
 
 const draw = () => {

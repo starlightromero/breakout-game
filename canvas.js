@@ -1,10 +1,11 @@
 /*  global
-    alert
+    alert, requestAnimationFrame
 */
 
 const canvas = document.getElementById('myCanvas')
 const ctx = canvas.getContext('2d')
 const ballRadius = 10
+let ballColor = '#dadada'
 let x = canvas.width / 2
 let y = canvas.height - 30
 let ballSpeed = 3
@@ -29,7 +30,7 @@ const bricks = []
 for (let c = 0; c < brickColumnCount; c++) {
   bricks[c] = []
   for (let r = 0; r < brickRowCount; r++) {
-    bricks[c][r] = { x: 0, y: 0, status: 1 }
+    bricks[c][r] = { x: 0, y: 0, status: 1, color: '#dadada' }
   }
 }
 
@@ -65,9 +66,10 @@ const collisionDetection = () => {
     for (let r = 0; r < brickRowCount; r++) {
       const b = bricks[c][r]
       if (b.status === 1) {
-        if (x > b.x && x < b.x + brickWidth && y > b.y && y < b.y + brickHeight) {
+        if (x > b.x && x < b.x + brickWidth && y > b.y && y < b.y + brickHeight + ballRadius) {
           dy = -dy
           b.status = 0
+          ballColor = b.color
           score++
           if (score === brickRowCount * brickColumnCount) {
             alert('YOU WIN, CONGRATULATIONS!')
@@ -82,7 +84,7 @@ const collisionDetection = () => {
 const drawBall = () => {
   ctx.beginPath()
   ctx.arc(x, y, ballRadius, 0, Math.PI * 2)
-  ctx.fillStyle = '#dadada'
+  ctx.fillStyle = ballColor
   ctx.fill()
   ctx.closePath()
 }
@@ -132,7 +134,8 @@ const drawBricks = () => {
         bricks[c][r].y = brickY
         ctx.beginPath()
         ctx.rect(brickX, brickY, brickWidth, brickHeight)
-        ctx.fillStyle = colorBricks(r)
+        bricks[c][r].color = colorBricks(r)
+        ctx.fillStyle = bricks[c][r].color
         ctx.fill()
         ctx.closePath()
       }

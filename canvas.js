@@ -7,9 +7,9 @@ const ctx = canvas.getContext('2d')
 const ballRadius = 10
 let x = canvas.width / 2
 let y = canvas.height - 30
-let ballSpeed = 1
-let dx = 2 * ballSpeed
-let dy = -2 * ballSpeed
+let ballSpeed = 3
+let dx = 1 * ballSpeed
+let dy = -1 * ballSpeed
 const paddleHeight = 10
 const paddleWidth = 75
 let paddleX = (canvas.width - paddleWidth) / 2
@@ -33,11 +33,7 @@ for (let c = 0; c < brickColumnCount; c++) {
   }
 }
 
-document.addEventListener('keydown', keyDownHandler, false)
-document.addEventListener('keyup', keyUpHandler, false)
-document.addEventListener('mousemove', mouseMoveHandler, false)
-
-function keyDownHandler (e) {
+const keyDownHandler = e => {
   if (e.key === 'Right' || e.key === 'ArrowRight') {
     rightPressed = true
   } else if (e.key === 'Left' || e.key === 'ArrowLeft') {
@@ -45,7 +41,7 @@ function keyDownHandler (e) {
   }
 }
 
-function keyUpHandler (e) {
+const keyUpHandler = e => {
   if (e.key === 'Right' || e.key === 'ArrowRight') {
     rightPressed = false
   } else if (e.key === 'Left' || e.key === 'ArrowLeft') {
@@ -53,14 +49,18 @@ function keyUpHandler (e) {
   }
 }
 
-function mouseMoveHandler (e) {
+const mouseMoveHandler = e => {
   const relativeX = e.clientX - canvas.offsetLeft
   if (relativeX > 0 && relativeX < canvas.width) {
     paddleX = relativeX - paddleWidth / 2
   }
 }
 
-function collisionDetection () {
+document.addEventListener('keydown', keyDownHandler, false)
+document.addEventListener('keyup', keyUpHandler, false)
+document.addEventListener('mousemove', mouseMoveHandler, false)
+
+const collisionDetection = () => {
   for (let c = 0; c < brickColumnCount; c++) {
     for (let r = 0; r < brickRowCount; r++) {
       const b = bricks[c][r]
@@ -79,7 +79,7 @@ function collisionDetection () {
   }
 }
 
-function drawBall () {
+const drawBall = () => {
   ctx.beginPath()
   ctx.arc(x, y, ballRadius, 0, Math.PI * 2)
   ctx.fillStyle = '#dadada'
@@ -87,7 +87,7 @@ function drawBall () {
   ctx.closePath()
 }
 
-function drawPaddle () {
+const drawPaddle = () => {
   ctx.beginPath()
   ctx.rect(paddleX, canvas.height - paddleHeight, paddleWidth, paddleHeight)
   ctx.fillStyle = '#dadada'
@@ -95,21 +95,7 @@ function drawPaddle () {
   ctx.closePath()
 }
 
-const colorBricks = () => {
-  if (bricks[c][r].y < 40) {
-    ctx.fillStyle = '#FF0000'
-  } else if (bricks[c][r].y < 80) {
-    ctx.fillStyle = '#FF9300'
-  } else if (bricks[c][r].y < 120) {
-    ctx.fillStyle = '#FFFF00'
-  } else if (bricks[c][r].y < 140) {
-    ctx.fillStyle = '#00FF00'
-  } else {
-    ctx.fillStyle = '#0000FF'
-  }
-}
-
-function drawBricks () {
+const drawBricks = () => {
   for (let c = 0; c < brickColumnCount; c++) {
     for (let r = 0; r < brickRowCount; r++) {
       if (bricks[c][r].status === 1) {
@@ -149,19 +135,19 @@ function drawBricks () {
   }
 }
 
-function drawScore () {
+const drawScore = () => {
   ctx.font = '16px Arial'
   ctx.fillStyle = '#dadada'
   ctx.fillText('Score: ' + score, 8, 20)
 }
 
-function drawLives () {
+const drawLives = () => {
   ctx.font = '16px Arial'
   ctx.fillStyle = '#dadada'
   ctx.fillText('Lives: ' + lives, canvas.width - 65, 20)
 }
 
-function draw () {
+const draw = () => {
   ctx.clearRect(0, 0, canvas.width, canvas.height)
   drawBricks()
   drawBall()

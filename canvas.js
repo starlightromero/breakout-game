@@ -105,25 +105,25 @@ const drawBricks = () => {
         bricks[c][r].y = brickY
         ctx.beginPath()
         ctx.rect(brickX, brickY, brickWidth, brickHeight)
-        if (bricks[c][r].y < 50) {
+        if (r === 0) {
           ctx.fillStyle = '#CC00FF'
-        } else if (bricks[c][r].y < 80) {
+        } else if (r === 1) {
           ctx.fillStyle = '#8000FF'
-        } else if (bricks[c][r].y < 110) {
+        } else if (r === 2) {
           ctx.fillStyle = '#0000FF'
-        } else if (bricks[c][r].y < 140) {
+        } else if (r === 3) {
           ctx.fillStyle = '#0080FF'
-        } else if (bricks[c][r].y < 170) {
+        } else if (r === 4) {
           ctx.fillStyle = '#00FFFF'
-        } else if (bricks[c][r].y < 200) {
+        } else if (r === 5) {
           ctx.fillStyle = '#00FF80'
-        } else if (bricks[c][r].y < 230) {
+        } else if (r === 6) {
           ctx.fillStyle = '#00FF00'
-        } else if (bricks[c][r].y < 260) {
+        } else if (r === 7) {
           ctx.fillStyle = '#80FF00'
-        } else if (bricks[c][r].y < 290) {
+        } else if (r === 8) {
           ctx.fillStyle = '#FFFF00'
-        } else if (bricks[c][r].y < 320) {
+        } else if (r === 9) {
           ctx.fillStyle = '#FF8000'
         } else {
           ctx.fillStyle = '#FF0000'

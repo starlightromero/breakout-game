@@ -41,19 +41,21 @@ const orange = '#FF8000';
 const red = '#FF0000';
 const p = '16px Arial';
 const heading = '130px Helvetica';
-
 const bricks = [];
-for (let c = 0; c < brickColumnCount; c += 1) {
-  bricks[c] = [];
-  for (let r = 0; r < brickRowCount; r += 1) {
-    bricks[c][r] = {
-      x: 0,
-      y: 0,
-      status: 1,
-      color: grey,
-    };
+
+const createBricks = () => {
+  for (let c = 0; c < brickColumnCount; c += 1) {
+    bricks[c] = [];
+    for (let r = 0; r < brickRowCount; r += 1) {
+      bricks[c][r] = {
+        x: 0,
+        y: 0,
+        status: 1,
+        color: grey,
+      };
+    }
   }
-}
+};
 
 const keyDownHandler = (e) => {
   if (e.key === RIGHT || e.key === ARROW_RIGHT) {
@@ -368,4 +370,5 @@ const draw = () => {
   }
 };
 
+createBricks();
 draw();

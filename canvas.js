@@ -18,33 +18,54 @@ const brickHeight = 20;
 const brickPadding = 10;
 const brickOffsetTop = 30;
 const brickOffsetLeft = 30;
-let x = canvas.width / 2;
-let y = canvas.height - paddleHeight - ballRadius;
+let ballX = canvas.width / 2;
+let ballY = canvas.height - paddleHeight - ballRadius;
 let score = 0;
 let lives = 3;
 let gameOver = false;
+const ARROW_RIGHT = 'ArrowRight';
+const ARROW_LEFT = 'ArrowLeft';
+const RIGHT = 'RIGHT';
+const LEFT = 'LEFT';
+const grey = '#dadada';
+const violet = '#CC00FF';
+const purple = '#8000FF';
+const blue = '#0000FF';
+const lightBlue = '#0080FF';
+const skyBlue = '#00FFFF';
+const blueGreen = '#00FF80';
+const green = '#00FF00';
+const limeGreen = '#80FF00';
+const yellow = '#FFFF00';
+const orange = '#FF8000';
+const red = '#FF0000';
+const p = '16px Arial';
+const heading = '130px Helvetica';
 
 const bricks = [];
 for (let c = 0; c < brickColumnCount; c += 1) {
   bricks[c] = [];
   for (let r = 0; r < brickRowCount; r += 1) {
     bricks[c][r] = {
-      x: 0, y: 0, status: 1, color: '#dadada',
+      x: 0,
+      y: 0,
+      status: 1,
+      color: grey,
     };
   }
 }
 
 const keyDownHandler = (e) => {
-  if (e.key === 'Right' || e.key === 'ArrowRight') {
+  if (e.key === RIGHT || e.key === ARROW_RIGHT) {
     rightPressed = true;
-  } else if (e.key === 'Left' || e.key === 'ArrowLeft') {
+  } else if (e.key === LEFT || e.key === ARROW_LEFT) {
     leftPressed = true;
   } else if (e.keyCode === 32 && ballSpeed === 0) {
     if (ballSpeed === 0) {
       ballSpeed = 3;
       dx = 1 * ballSpeed;
       dy = -1 * ballSpeed;
-      paddleX = x - ballRadius / 2 + paddleWidth / 2;
+      paddleX = ballX - ballRadius / 2 + paddleWidth / 2;
     } else if (gameOver) {
       document.location.reload();
     }
@@ -52,9 +73,9 @@ const keyDownHandler = (e) => {
 };
 
 const keyUpHandler = (e) => {
-  if (e.key === 'Right' || e.key === 'ArrowRight') {
+  if (e.key === RIGHT || e.key === ARROW_RIGHT) {
     rightPressed = false;
-  } else if (e.key === 'Left' || e.key === 'ArrowLeft') {
+  } else if (e.key === LEFT || e.key === ARROW_LEFT) {
     leftPressed = false;
   }
 };
@@ -64,7 +85,7 @@ const mouseMoveHandler = (e) => {
   if (relativeX > 0 && relativeX < canvas.width) {
     paddleX = relativeX - paddleWidth / 2;
     if (ballSpeed === 0) {
-      x = relativeX;
+      ballX = relativeX;
     }
   }
 };
@@ -83,8 +104,9 @@ document.addEventListener('click', () => {
 });
 
 const resetGame = () => {
-  ballColor = '#dadada';
-  paddleColor = '#dadada';
+  lives -= 1;
+  ballColor = grey;
+  paddleColor = grey;
   ballSpeed = 3;
   dx = 1 * ballSpeed;
   dy = -1 * ballSpeed;
@@ -95,15 +117,15 @@ const collisionDetection = () => {
     for (let r = 0; r < brickRowCount; r += 1) {
       const b = bricks[c][r];
       if (b.status === 1) {
-        if (x > b.x && x < b.x + brickWidth && y > b.y && y < b.y + brickHeight + ballRadius) {
+        if (ballX > b.x && ballX < b.x + brickWidth && ballY > b.y && ballY < b.y + brickHeight + ballRadius) {
           dy = -dy;
           b.status = 0;
           ballColor = b.color;
           score += 1;
           if (score === brickRowCount * brickColumnCount) {
             ctx.beginPath();
-            ctx.font = '130px Helvetica';
-            ctx.fillStyle = '#dadada';
+            ctx.font = heading;
+            ctx.fillStyle = grey;
             const youWinString = 'YOU WIN!';
             const youWinWidth = ctx.measureText(youWinString).width;
             ctx.fillText(youWinString, canvas.width / 2 - youWinWidth / 2, canvas.height / 2);
@@ -115,9 +137,27 @@ const collisionDetection = () => {
   }
 };
 
+const collisionWall = () => {
+  if (ballX + dx > canvas.width - ballRadius || ballX + dx < ballRadius) {
+    dx = -dx;
+    ballColor = grey;
+  }
+};
+
+const collisionTop = () => {
+  if (ballY + dy < ballRadius) {
+    dy = -dy;
+  }
+};
+
+const moveBall = () => {
+  ballX += dx;
+  ballY += dy;
+};
+
 const drawBall = () => {
   ctx.beginPath();
-  ctx.arc(x, y, ballRadius, 0, Math.PI * 2);
+  ctx.arc(ballX, ballY, ballRadius, 0, Math.PI * 2);
   ctx.fillStyle = ballColor;
   ctx.fill();
   ctx.closePath();
@@ -134,27 +174,27 @@ const drawPaddle = () => {
 const colorBricks = (r) => {
   switch (r) {
     case 0:
-      return '#CC00FF';
+      return violet;
     case 1:
-      return '#8000FF';
+      return purple;
     case 2:
-      return '#0000FF';
+      return blue;
     case 3:
-      return '#0080FF';
+      return lightBlue;
     case 4:
-      return '#00FFFF';
+      return skyBlue;
     case 5:
-      return '#00FF80';
+      return blueGreen;
     case 6:
-      return '#00FF00';
+      return green;
     case 7:
-      return '#80FF00';
+      return limeGreen;
     case 8:
-      return '#FFFF00';
+      return yellow;
     case 9:
-      return '#FF8000';
+      return orange;
     case 10:
-      return '#FF0000';
+      return red;
     default:
       return null;
   }
@@ -180,14 +220,14 @@ const drawBricks = () => {
 };
 
 const drawScore = () => {
-  ctx.font = '16px Arial';
-  ctx.fillStyle = '#dadada';
+  ctx.font = p;
+  ctx.fillStyle = grey;
   ctx.fillText(`Score: ${score}`, 8, 20);
 };
 
 const drawLives = () => {
-  ctx.font = '16px Arial';
-  ctx.fillStyle = '#dadada';
+  ctx.font = p;
+  ctx.fillStyle = grey;
   ctx.fillText(`Lives: ${lives}`, canvas.width - 65, 20);
 };
 
@@ -204,44 +244,55 @@ const updateBallSpeed = () => {
   }
 };
 
+const resetBall = () => {
+  ballX = canvas.width / 2;
+  ballY = canvas.height - 30;
+  dx = 2;
+  dy = -2;
+};
+
+const resetPaddle = () => {
+  paddleX = (canvas.width - paddleWidth) / 2;
+};
+
 const checkPowerUp = () => {
   switch (paddleColor) {
-    case '#CC00FF':
+    case violet:
       ballSpeed += 1;
       updateBallSpeed();
       return ballSpeed;
-    case '#8000FF':
+    case purple:
       ballSpeed += 1;
       updateBallSpeed();
       return ballSpeed;
-    case '#0000FF':
+    case blue:
       ballSpeed -= 1;
       updateBallSpeed();
       return ballSpeed;
-    case '#0080FF':
+    case lightBlue:
       paddleWidth += 20;
       return ballSpeed;
-    case '#00FFFF':
+    case skyBlue:
       paddleWidth -= 10;
       return paddleWidth;
-    case '#00FF80':
+    case blueGreen:
       paddleWidth += 10;
       return paddleWidth;
-    case '#00FF00':
+    case green:
       paddleWidth -= 5;
       return paddleWidth;
-    case '#80FF00':
-      paddleWidth += 5;
+    case limeGreen:
+      paddleWidth += 10;
       return paddleWidth;
-    case '#FFFF00':
+    case yellow:
       ballSpeed -= 1;
       updateBallSpeed();
       return ballSpeed;
-    case '#FF8000':
-      paddleWidth += 5;
+    case orange:
+      paddleWidth += 10;
       return paddleWidth;
-    case '#FF0000':
-      ballSpeed -= 1;
+    case red:
+      ballSpeed += 1;
       updateBallSpeed();
       return ballSpeed;
     default:
@@ -249,65 +300,70 @@ const checkPowerUp = () => {
   }
 };
 
+const collisionPaddle = () => {
+  if (ballX > paddleX && ballX + ballRadius < paddleX + paddleWidth) {
+    dy = -dy;
+    paddleColor = ballColor;
+    checkPowerUp();
+    return true;
+  }
+  return false;
+};
+
+const checkKeys = () => {
+  if (rightPressed && paddleX < canvas.width - paddleWidth) {
+    paddleX += 7;
+    if (ballSpeed === 0) {
+      ballX += 7;
+    }
+  } else if (leftPressed && paddleX > 0) {
+    paddleX -= 7;
+    if (ballSpeed === 0) {
+      ballX -= 7;
+    }
+  }
+};
+
+const displayGameOver = () => {
+  ctx.beginPath();
+  ctx.font = heading;
+  ctx.fillStyle = grey;
+  const gameoverString = 'GAMEOVER';
+  const gameoverWidth = ctx.measureText(gameoverString).width;
+  ctx.fillText(gameoverString, canvas.width / 2 - gameoverWidth / 2, canvas.height / 2);
+  gameOver = true;
+};
+
+const drawGame = () => {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  drawBricks();
+  drawBall();
+  drawPaddle();
+  drawScore();
+  drawLives();
+};
+
 const draw = () => {
   if (!gameOver) {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    drawBricks();
-    drawBall();
-    drawPaddle();
-    drawScore();
-    drawLives();
+    drawGame();
     collisionDetection();
 
-    if (x + dx > canvas.width - ballRadius || x + dx < ballRadius) {
-      // ball hits wall
-      dx = -dx;
-      ballColor = '#dadada';
-    }
-    if (y + dy < ballRadius) {
-      // ball hits top
-      dy = -dy;
-    } else if (y + ballRadius >= canvas.height - paddleHeight && ballSpeed > 0) {
-      if (x > paddleX && x + ballRadius < paddleX + paddleWidth) {
-        // ball hits paddle
-        dy = -dy;
-        paddleColor = ballColor;
-        checkPowerUp();
-      } else {
-        lives -= 1;
+    collisionWall();
+    collisionTop();
+    if (ballY + ballRadius >= canvas.height - paddleHeight && ballSpeed > 0) {
+      if (!collisionPaddle()) {
         resetGame();
         if (!lives) {
-          ctx.beginPath();
-          ctx.font = '130px Helvetica';
-          ctx.fillStyle = '#dadada';
-          const gameoverString = 'GAMEOVER';
-          const gameoverWidth = ctx.measureText(gameoverString).width;
-          ctx.fillText(gameoverString, canvas.width / 2 - gameoverWidth / 2, canvas.height / 2);
-          gameOver = true;
+          displayGameOver();
         } else {
-          x = canvas.width / 2;
-          y = canvas.height - 30;
-          dx = 2;
-          dy = -2;
-          paddleX = (canvas.width - paddleWidth) / 2;
+          resetBall();
+          resetPaddle();
         }
       }
     }
 
-    if (rightPressed && paddleX < canvas.width - paddleWidth) {
-      paddleX += 7;
-      if (ballSpeed === 0) {
-        x += 7;
-      }
-    } else if (leftPressed && paddleX > 0) {
-      paddleX -= 7;
-      if (ballSpeed === 0) {
-        x -= 7;
-      }
-    }
-
-    x += dx;
-    y += dy;
+    moveBall();
+    checkKeys();
     requestAnimationFrame(draw);
   }
 };

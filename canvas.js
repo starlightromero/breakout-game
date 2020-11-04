@@ -11,13 +11,6 @@ let paddleWidth = 75;
 let paddleX = (canvas.width - paddleWidth) / 2;
 let rightPressed = false;
 let leftPressed = false;
-const brickRowCount = 11;
-const brickColumnCount = 14;
-const brickWidth = 75;
-const brickHeight = 20;
-const brickPadding = 10;
-const brickOffsetTop = 30;
-const brickOffsetLeft = 30;
 let ballX = canvas.width / 2;
 let ballY = canvas.height - paddleHeight - ballRadius;
 let score = 0;
@@ -41,48 +34,118 @@ const orange = '#FF8000';
 const red = '#FF0000';
 const p = '16px Arial';
 const heading = '130px Helvetica';
-const bricks = [];
 
-const colorBricks = (r) => {
-  switch (r) {
-    case 0:
-      return violet;
-    case 1:
-      return purple;
-    case 2:
-      return blue;
-    case 3:
-      return lightBlue;
-    case 4:
-      return skyBlue;
-    case 5:
-      return blueGreen;
-    case 6:
-      return green;
-    case 7:
-      return limeGreen;
-    case 8:
-      return yellow;
-    case 9:
-      return orange;
-    case 10:
-      return red;
-    default:
-      return red;
+class Bricks {
+  constructor() {
+    this.bricks = [];
+    this.rowCount = 11;
+    this.columnCount = 14;
+    this.width = 75;
+    this.height = 20;
+    this.padding = 10;
+    this.offsetTop = 30;
+    this.offsetLeft = 30;
   }
+
+  color(r) {
+    switch (r) {
+      case 0:
+        return violet;
+      case 1:
+        return purple;
+      case 2:
+        return blue;
+      case 3:
+        return lightBlue;
+      case 4:
+        return skyBlue;
+      case 5:
+        return blueGreen;
+      case 6:
+        return green;
+      case 7:
+        return limeGreen;
+      case 8:
+        return yellow;
+      case 9:
+        return orange;
+      case 10:
+        return red;
+      default:
+        return red;
+    }
+  }
+
+  show() {
+    for (let c = 0; c < this.columnCount; c += 1) {
+      this.bricks[c] = [];
+      for (let r = 0; r < this.rowCount; r += 1) {
+        this.bricks[c][r] = {
+          x: 0,
+          y: 0,
+          status: 1,
+          color: this.color(r),
+        };
+      }
+    }
+  }
+
+  collision() {
+    for (let c = 0; c < this.columnCount; c += 1) {
+      for (let r = 0; r < this.rowCount; r += 1) {
+        const b = this.bricks[c][r];
+        if (b.status === 1) {
+          if (
+            ballX > b.x
+            && ballX < b.x + this.width
+            && ballY > b.y
+            && ballY < b.y + this.height + ballRadius
+          ) {
+            dy = -dy;
+            score += 1;
+            ballColor = b.color;
+            b.status = 0;
+            checkIfWon();
+          }
+        }
+      }
+    }
+  }
+
+  draw() {
+    for (let c = 0; c < this.columnCount; c += 1) {
+      for (let r = 0; r < this.rowCount; r += 1) {
+        if (this.bricks[c][r].status === 1) {
+          const brickX = (c * (this.width + this.padding)) + this.offsetLeft;
+          const brickY = (r * (this.height + this.padding)) + this.offsetTop;
+          this.bricks[c][r].x = brickX;
+          this.bricks[c][r].y = brickY;
+          ctx.beginPath();
+          ctx.rect(brickX, brickY, this.width, this.height);
+          ctx.fillStyle = this.bricks[c][r].color;
+          ctx.fill();
+          ctx.closePath();
+        }
+      }
+    }
+  }
+}
+
+const bricks = new Bricks();
+
+const displayYouWin = () => {
+  ctx.beginPath();
+  ctx.font = heading;
+  ctx.fillStyle = grey;
+  const youWinString = 'YOU WIN!';
+  const youWinWidth = ctx.measureText(youWinString).width;
+  ctx.fillText(youWinString, canvas.width / 2 - youWinWidth / 2, canvas.height / 2);
 };
 
-const createBricks = () => {
-  for (let c = 0; c < brickColumnCount; c += 1) {
-    bricks[c] = [];
-    for (let r = 0; r < brickRowCount; r += 1) {
-      bricks[c][r] = {
-        x: 0,
-        y: 0,
-        status: 1,
-        color: colorBricks(r),
-      };
-    }
+const checkIfWon = () => {
+  if (score === bricks.rowCount * bricks.columnCount) {
+    displayYouWin();
+    document.location.reload();
   }
 };
 
@@ -143,44 +206,6 @@ const resetGame = () => {
   dy = -1 * ballSpeed;
 };
 
-const displayYouWin = () => {
-  ctx.beginPath();
-  ctx.font = heading;
-  ctx.fillStyle = grey;
-  const youWinString = 'YOU WIN!';
-  const youWinWidth = ctx.measureText(youWinString).width;
-  ctx.fillText(youWinString, canvas.width / 2 - youWinWidth / 2, canvas.height / 2);
-};
-
-const checkIfWon = () => {
-  if (score === brickRowCount * brickColumnCount) {
-    displayYouWin();
-    document.location.reload();
-  }
-};
-
-const collisionBricks = () => {
-  for (let c = 0; c < brickColumnCount; c += 1) {
-    for (let r = 0; r < brickRowCount; r += 1) {
-      const b = bricks[c][r];
-      if (b.status === 1) {
-        if (
-          ballX > b.x
-          && ballX < b.x + brickWidth
-          && ballY > b.y
-          && ballY < b.y + brickHeight + ballRadius
-        ) {
-          dy = -dy;
-          score += 1;
-          ballColor = b.color;
-          b.status = 0;
-          checkIfWon();
-        }
-      }
-    }
-  }
-};
-
 const collisionWall = () => {
   if (ballX + dx > canvas.width - ballRadius || ballX + dx < ballRadius) {
     dx = -dx;
@@ -213,24 +238,6 @@ const drawPaddle = () => {
   ctx.fillStyle = paddleColor;
   ctx.fill();
   ctx.closePath();
-};
-
-const drawBricks = () => {
-  for (let c = 0; c < brickColumnCount; c += 1) {
-    for (let r = 0; r < brickRowCount; r += 1) {
-      if (bricks[c][r].status === 1) {
-        const brickX = (c * (brickWidth + brickPadding)) + brickOffsetLeft;
-        const brickY = (r * (brickHeight + brickPadding)) + brickOffsetTop;
-        bricks[c][r].x = brickX;
-        bricks[c][r].y = brickY;
-        ctx.beginPath();
-        ctx.rect(brickX, brickY, brickWidth, brickHeight);
-        ctx.fillStyle = bricks[c][r].color;
-        ctx.fill();
-        ctx.closePath();
-      }
-    }
-  }
 };
 
 const drawScore = () => {
@@ -350,7 +357,7 @@ const displayGameOver = () => {
 
 const drawGame = () => {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
-  drawBricks();
+  bricks.draw();
   drawBall();
   drawPaddle();
   drawScore();
@@ -361,7 +368,7 @@ const draw = () => {
   if (!gameOver) {
     drawGame();
 
-    collisionBricks();
+    bricks.collision();
     collisionWall();
     collisionTop();
     if (ballY + ballRadius >= canvas.height - paddleHeight && ballSpeed > 0) {
@@ -382,5 +389,5 @@ const draw = () => {
   }
 };
 
-createBricks();
+bricks.show();
 draw();

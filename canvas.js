@@ -43,6 +43,35 @@ const p = '16px Arial';
 const heading = '130px Helvetica';
 const bricks = [];
 
+const colorBricks = (r) => {
+  switch (r) {
+    case 0:
+      return violet;
+    case 1:
+      return purple;
+    case 2:
+      return blue;
+    case 3:
+      return lightBlue;
+    case 4:
+      return skyBlue;
+    case 5:
+      return blueGreen;
+    case 6:
+      return green;
+    case 7:
+      return limeGreen;
+    case 8:
+      return yellow;
+    case 9:
+      return orange;
+    case 10:
+      return red;
+    default:
+      return red;
+  }
+};
+
 const createBricks = () => {
   for (let c = 0; c < brickColumnCount; c += 1) {
     bricks[c] = [];
@@ -51,7 +80,7 @@ const createBricks = () => {
         x: 0,
         y: 0,
         status: 1,
-        color: grey,
+        color: colorBricks(r),
       };
     }
   }
@@ -114,29 +143,88 @@ const resetGame = () => {
   dy = -1 * ballSpeed;
 };
 
-const collisionDetection = () => {
+const displayYouWin = () => {
+  ctx.beginPath();
+  ctx.font = heading;
+  ctx.fillStyle = grey;
+  const youWinString = 'YOU WIN!';
+  const youWinWidth = ctx.measureText(youWinString).width;
+  ctx.fillText(youWinString, canvas.width / 2 - youWinWidth / 2, canvas.height / 2);
+};
+
+const changeBrickColor = (b) => {
+  switch (b.color) {
+    case violet:
+      return purple;
+    case purple:
+      return blue;
+    case blue:
+      return lightBlue;
+    case lightBlue:
+      return skyBlue;
+    case skyBlue:
+      return blueGreen;
+    case blueGreen:
+      return green;
+    case green:
+      return limeGreen;
+    case limeGreen:
+      return yellow;
+    case yellow:
+      return orange;
+    case orange:
+      return red;
+    case red:
+      return grey;
+    default:
+      return grey;
+  }
+};
+
+const checkIfWon = () => {
+  if (score === brickRowCount * brickColumnCount) {
+    displayYouWin();
+    document.location.reload();
+  }
+};
+
+const forEachBrick = async (func) => {
   for (let c = 0; c < brickColumnCount; c += 1) {
     for (let r = 0; r < brickRowCount; r += 1) {
       const b = bricks[c][r];
-      if (b.status === 1) {
-        if (ballX > b.x && ballX < b.x + brickWidth && ballY > b.y && ballY < b.y + brickHeight + ballRadius) {
-          dy = -dy;
-          b.status = 0;
-          ballColor = b.color;
-          score += 1;
-          if (score === brickRowCount * brickColumnCount) {
-            ctx.beginPath();
-            ctx.font = heading;
-            ctx.fillStyle = grey;
-            const youWinString = 'YOU WIN!';
-            const youWinWidth = ctx.measureText(youWinString).width;
-            ctx.fillText(youWinString, canvas.width / 2 - youWinWidth / 2, canvas.height / 2);
-            document.location.reload();
-          }
-        }
+      [bricks[c][r].color, bricks[c][r].status] = await func(b);
+      if (bricks[c][r].status === 0) {
+        console.log(bricks[c][r]);
       }
     }
   }
+};
+
+const collisionBrick = (b) => {
+  let newColor = b.color;
+  let newStatus = 1;
+  if (b.status === 1) {
+    if (
+      ballX > b.x
+      && ballX < b.x + brickWidth
+      && ballY > b.y
+      && ballY < b.y + brickHeight + ballRadius
+    ) {
+      dy = -dy;
+      ballColor = b.color;
+      score += 1;
+      newColor = changeBrickColor(b);
+      if (newColor === grey) {
+        newStatus = 0;
+      }
+    }
+  }
+  return [newColor, newStatus];
+};
+
+const collisionBricks = () => {
+  forEachBrick(collisionBrick);
+  checkIfWon();
 };
 
 const collisionWall = () => {
@@ -173,35 +261,6 @@ const drawPaddle = () => {
   ctx.closePath();
 };
 
-const colorBricks = (r) => {
-  switch (r) {
-    case 0:
-      return violet;
-    case 1:
-      return purple;
-    case 2:
-      return blue;
-    case 3:
-      return lightBlue;
-    case 4:
-      return skyBlue;
-    case 5:
-      return blueGreen;
-    case 6:
-      return green;
-    case 7:
-      return limeGreen;
-    case 8:
-      return yellow;
-    case 9:
-      return orange;
-    case 10:
-      return red;
-    default:
-      return null;
-  }
-};
-
 const drawBricks = () => {
   for (let c = 0; c < brickColumnCount; c += 1) {
     for (let r = 0; r < brickRowCount; r += 1) {
@@ -212,7 +271,6 @@ const drawBricks = () => {
         bricks[c][r].y = brickY;
         ctx.beginPath();
         ctx.rect(brickX, brickY, brickWidth, brickHeight);
-        bricks[c][r].color = colorBricks(r);
         ctx.fillStyle = bricks[c][r].color;
         ctx.fill();
         ctx.closePath();
@@ -348,8 +406,8 @@ const drawGame = () => {
 const draw = () => {
   if (!gameOver) {
     drawGame();
-    collisionDetection();
 
+    collisionBricks();
     collisionWall();
     collisionTop();
     if (ballY + ballRadius >= canvas.height - paddleHeight && ballSpeed > 0) {

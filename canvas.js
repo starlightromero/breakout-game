@@ -173,6 +173,7 @@ const collisionBricks = () => {
           dy = -dy;
           score += 1;
           ballColor = b.color;
+          b.status = 0;
           checkIfWon();
         }
       }

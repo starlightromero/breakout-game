@@ -1,8 +1,6 @@
 const canvas = document.getElementById('myCanvas');
 const ctx = canvas.getContext('2d');
-let score = 0;
-let lives = 3;
-let gameOver = false;
+
 const grey = '#dadada';
 const violet = '#CC00FF';
 const purple = '#8000FF';
@@ -89,10 +87,10 @@ class Bricks {
             && ball.y < b.y + this.height + ball.radius
           ) {
             ball.dy = -ball.dy;
-            score += 1;
+            game.score += 1;
             ball.color = b.color;
             b.status = 0;
-            checkIfWon();
+            game.checkIfWon();
           }
         }
       }
@@ -174,7 +172,6 @@ class Paddle {
   }
 
   checkKeys() {
-    console.log(this.rightPressed);
     if (this.rightPressed && this.x < canvas.width - this.width) {
       this.x += 7;
       if (ball.speed === 0) {
@@ -211,27 +208,81 @@ class Paddle {
   }
 }
 
-const bricks = new Bricks();
-
-const displayYouWin = () => {
-  ctx.beginPath();
-  ctx.font = heading;
-  ctx.fillStyle = grey;
-  const youWinString = 'YOU WIN!';
-  const youWinWidth = ctx.measureText(youWinString).width;
-  ctx.fillText(youWinString, canvas.width / 2 - youWinWidth / 2, canvas.height / 2);
-};
-
-const checkIfWon = () => {
-  if (score === bricks.rowCount * bricks.columnCount) {
-    displayYouWin();
-    document.location.reload();
+class Game {
+  constructor() {
+    this.score = 0;
+    this.lives = 3;
+    this.over = false;
   }
-};
+
+  displayYouWin() {
+    ctx.beginPath();
+    ctx.font = heading;
+    ctx.fillStyle = grey;
+    const youWinString = 'YOU WIN!';
+    const youWinWidth = ctx.measureText(youWinString).width;
+    ctx.fillText(
+      youWinString, canvas.width / 2 - youWinWidth / 2, canvas.height / 2,
+    );
+  }
+
+  checkIfWon() {
+    if (this.score === bricks.rowCount * bricks.columnCount) {
+      this.displayYouWin();
+      document.location.reload();
+    }
+  }
+
+  reset() {
+    this.lives -= 1;
+    ball.color = grey;
+    paddle.color = grey;
+    ball.speed = 3;
+    ball.dx = 1 * ball.speed;
+    ball.dy = -1 * ball.speed;
+  }
+
+  drawScore() {
+    ctx.font = p;
+    ctx.fillStyle = grey;
+    ctx.fillText(`Score: ${this.score}`, 8, 20);
+  }
+
+  drawLives() {
+    ctx.font = p;
+    ctx.fillStyle = grey;
+    ctx.fillText(`Lives: ${this.lives}`, canvas.width - 65, 20);
+  }
+
+  drawGameOver() {
+    ctx.beginPath();
+    ctx.font = heading;
+    ctx.fillStyle = grey;
+    const gameoverString = 'GAMEOVER';
+    const gameoverWidth = ctx.measureText(gameoverString).width;
+    ctx.fillText(
+      gameoverString, canvas.width / 2 - gameoverWidth / 2, canvas.height / 2,
+    );
+    this.over = true;
+  }
+
+  draw() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    bricks.draw();
+    ball.draw();
+    paddle.draw();
+    this.drawScore();
+    this.drawLives();
+  }
+}
+
+const bricks = new Bricks();
 
 const paddle = new Paddle();
 
 const ball = new Ball(paddle);
+
+const game = new Game();
 
 const keyDownHandler = (e) => {
   if (e.key === RIGHT || e.key === ARROW_RIGHT) {
@@ -244,7 +295,7 @@ const keyDownHandler = (e) => {
       ball.dx = 1 * ball.speed;
       ball.dy = -1 * ball.speed;
       paddle.x = ball.x - ball.radius / 2 + paddle.width / 2;
-    } else if (gameOver) {
+    } else if (game.over) {
       document.location.reload();
     }
   }
@@ -276,19 +327,10 @@ document.addEventListener('click', () => {
     ball.speed = 3;
     ball.dx = 1 * ball.speed;
     ball.dy = -1 * ball.speed;
-  } else if (gameOver) {
+  } else if (game.over) {
     document.location.reload();
   }
 });
-
-const resetGame = () => {
-  lives -= 1;
-  ball.color = grey;
-  paddle.color = grey;
-  ball.speed = 3;
-  ball.dx = 1 * ball.speed;
-  ball.dy = -1 * ball.speed;
-};
 
 const collisionWall = () => {
   if (ball.x + ball.dx > canvas.width - ball.radius || ball.x + ball.dx < ball.radius) {
@@ -301,18 +343,6 @@ const collisionTop = () => {
   if (ball.y + ball.dy < ball.rcadius) {
     ball.dy = -ball.dy;
   }
-};
-
-const drawScore = () => {
-  ctx.font = p;
-  ctx.fillStyle = grey;
-  ctx.fillText(`Score: ${score}`, 8, 20);
-};
-
-const drawLives = () => {
-  ctx.font = p;
-  ctx.fillStyle = grey;
-  ctx.fillText(`Lives: ${lives}`, canvas.width - 65, 20);
 };
 
 const checkPowerUp = () => {
@@ -360,37 +390,18 @@ const checkPowerUp = () => {
   }
 };
 
-const displayGameOver = () => {
-  ctx.beginPath();
-  ctx.font = heading;
-  ctx.fillStyle = grey;
-  const gameoverString = 'GAMEOVER';
-  const gameoverWidth = ctx.measureText(gameoverString).width;
-  ctx.fillText(gameoverString, canvas.width / 2 - gameoverWidth / 2, canvas.height / 2);
-  gameOver = true;
-};
-
-const drawGame = () => {
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-  bricks.draw();
-  ball.draw();
-  paddle.draw();
-  drawScore();
-  drawLives();
-};
-
 const draw = () => {
-  if (!gameOver) {
-    drawGame();
+  if (!game.over) {
+    game.draw();
 
     bricks.collision();
     collisionWall();
     collisionTop();
     if (ball.y + ball.radius >= canvas.height - paddle.height && ball.speed > 0) {
       if (!paddle.collision()) {
-        resetGame();
-        if (!lives) {
-          displayGameOver();
+        game.reset();
+        if (!game.lives) {
+          game.drawGameOver();
         } else {
           ball.reset();
           paddle.reset();

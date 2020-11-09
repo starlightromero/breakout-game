@@ -1,20 +1,11 @@
-class Sprite {
-  constructor(x, y, width = 10, height = 10, color = 'grey') {
+class Brick extends Sprite {
+  constructor(x, y, width, height, color) {
     this.x = x;
     this.y = y;
     this.width = width;
     this.height = height;
     this.color = color;
-  }
-
-  moveBy(dx, dy) {
-    this.x += dx;
-    this.y += dy;
-  }
-
-  moveTo(x, y) {
-    this.x = x;
-    this.y = y;
+    this.status = 1;
   }
 
   render(ctx) {

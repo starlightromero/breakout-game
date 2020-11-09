@@ -1,11 +1,28 @@
 class Paddle {
-  constructor(canvas) {
-    this.color = Colors.grey;
-    this.height = 10;
-    this.width = 75;
-    this.x = (canvas.width - this.width) / 2;
-    this.rightPressed = false;
-    this.leftPressed = false;
+  constructor(x, y, width, height, color = 'grey') {
+    this.x = x;
+    this.y = y;
+    this.width = width;
+    this.height = height;
+    this.color = color;
+  }
+
+  moveBy(dx, dy) {
+    this.x += dx;
+    this.y += dy;
+  }
+
+  moveTo(x, y) {
+    this.x = x;
+    this.y = y;
+  }
+
+  render(ctx) {
+    ctx.beginPath();
+    ctx.rect(this.x, this.y, this.width, this.height);
+    ctx.fillStyle = this.color;
+    ctx.fill();
+    ctx.closePath();
   }
 
   checkKeys(canvas, ball) {
@@ -20,24 +37,6 @@ class Paddle {
         ball.x -= 7;
       }
     }
-  }
-
-  draw(ctx, canvas) {
-    ctx.beginPath();
-    ctx.rect(this.x, canvas.height - this.height, this.width, this.height);
-    ctx.fillStyle = this.color;
-    ctx.fill();
-    ctx.closePath();
-  }
-
-  collision(ball, checkPowerUp) {
-    if (ball.x > this.x && ball.x + ball.radius < this.x + this.width) {
-      ball.dy = -ball.dy;
-      this.color = ball.color;
-      checkPowerUp();
-      return true;
-    }
-    return false;
   }
 
   reset(canvas) {

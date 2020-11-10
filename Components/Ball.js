@@ -1,11 +1,10 @@
-class Ball {
-  constructor(x = 0, y = 0, dx = 2, dy = -2, radius = 10, color = 'grey') {
-    this.x = x;
-    this.y = y;
-    this.dx = dx;
-    this.dy = dy;
+class Ball extends Sprite {
+  constructor(x = 0, y = 0, speed = 1, radius = 10, color = Colors.grey) {
+    super(x, y, radius * 2, radius * 2, color);
+    this.speed = speed;
+    this.dx = this.speed;
+    this.dy = -this.speed;
     this.radius = radius;
-    this.color = color;
     this.PI2 = Math.PI * 2;
   }
 
@@ -17,28 +16,13 @@ class Ball {
     ctx.closePath();
   }
 
+  updateSpeed(speed) {
+    this.speed += speed;
+    this.dx = this.speed;
+    this.dy = -this.speed;
+  }
+
   move() {
-    this.x += this.dx;
-    this.y += this.dy;
-  }
-
-  updateSpeed() {
-    if (this.dx > 0) {
-      this.dx = 1 * this.speed;
-    } else {
-      this.dx = -1 * this.speed;
-    }
-    if (this.dy < 0) {
-      this.dy = -1 * this.speed;
-    } else {
-      this.dy = 1 * this.speed;
-    }
-  }
-
-  reset(canvas) {
-    this.x = canvas.width / 2;
-    this.y = canvas.height - 30;
-    this.dx = 2;
-    this.dy = -2;
+    this.moveBy(this.dx, this.dy);
   }
 }

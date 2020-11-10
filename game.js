@@ -11,21 +11,20 @@ class Game {
 
     this.over = false;
     this.ballRadius = 10;
-    this.paddleHeight = 10;
-    this.paddleWidth = 75;
-    this.brickRowCount = 3;
-    this.brickColumnCount = 5;
+    this.brickRowCount = 11;
+    this.brickColumnCount = 14;
     this.brickWidth = 75;
     this.brickHeight = 20;
     this.brickPadding = 10;
     this.brickOffsetLeft = 30;
     this.brickOffsetTop = 30;
+    this.paddleWidth = 100;
+    this.paddleHeight = 10;
     this.paddleXStart = (this.canvas.width - this.paddleWidth) / 2;
-    this.paddleYStart = this.canvas.height - this.paddleWidth;
-    this.objectColor = 'grey';
+    this.paddleYStart = this.canvas.height - this.paddleHeight;
 
-    this.ball = new Ball(0, 0, 2, -2, this.ballRadius, this.objectColor);
-    this.paddle = new Paddle(this.canvas);
+    this.ball = new Ball(0, 0, 1, this.ballRadius, Colors.grey());
+    this.paddle = new Sprite(this.paddleXStart, this.paddleYStart, this.paddleWidth, this.paddleHeight, Colors.grey());
     this.bricks = new Bricks({
       cols: this.brickColumnCount,
       rows: this.brickRowCount,
@@ -35,8 +34,8 @@ class Game {
       offsetLeft: this.brickOffsetLeft,
       offsetTop: this.brickOffsetTop,
     });
-    this.scoreLabel = new GameLabel('Score: ', 8, 20);
-    this.livesLabel = new GameLabel('Lives: ', this.canvas.width - 65, 20);
+    this.scoreLabel = new GameLabel('Score: ', 8, 20, this.objectColor);
+    this.livesLabel = new GameLabel('Lives: ', this.canvas.width - 65, 20, this.objectColor);
 
     this.rightPressed = false;
     this.leftPressed = false;
@@ -64,20 +63,20 @@ class Game {
   }
 
   resetBallAndPaddle() {
-    this.ball.color = Colors.grey;
+    this.ball.color = Colors.grey();
     this.ball.x = this.canvas.width / 2;
     this.ball.y = this.canvas.height - 30;
     this.ball.speed = 3;
     this.ball.dx = 1 * this.ball.speed;
     this.ball.dy = -1 * this.ball.speed;
-    this.paddle.color = Colors.grey;
+    this.paddle.color = Colors.grey();
     this.paddle.x = this.paddleXStart;
   }
 
   collisionBricks() {
     for (let c = 0; c < this.bricks.cols; c += 1) {
       for (let r = 0; r < this.bricks.rows; r += 1) {
-        const brick = this.bricks.brick[c][r];
+        const brick = this.bricks.bricks[c][r];
         if (brick.status === 1) {
           if (
             this.ball.x > brick.x
@@ -179,43 +178,38 @@ class Game {
 
   checkPowerUp() {
     switch (this.paddle.color) {
-      case Colors.violet:
-        this.ball.speed += 1;
-        this.ball.updateSpeed();
+      case Colors.violet():
+        this.ball.updateSpeed(1);
         return this.ball.speed;
-      case Colors.purple:
-        this.ball.speed += 1;
-        this.ball.updateSpeed();
+      case Colors.purple():
+        this.ball.updateSpeed(1);
         return this.ball.speed;
-      case Colors.blue:
-        this.ball.speed -= 1;
-        this.ball.updateSpeed();
+      case Colors.blue():
+        this.ball.updateSpeed(-1);
         return this.ball.speed;
-      case Colors.lightBlue:
+      case Colors.lightBlue():
         this.paddle.width += 20;
         return this.ball.speed;
-      case Colors.skyBlue:
+      case Colors.skyBlue():
         this.paddle.width -= 10;
         return this.paddle.width;
-      case Colors.blueGreen:
+      case Colors.blueGreen():
         this.paddle.width += 10;
         return this.paddle.width;
-      case Colors.green:
+      case Colors.green():
         this.paddle.width -= 5;
         return this.paddle.width;
-      case Colors.limeGreen:
+      case Colors.limeGreen():
         this.paddle.width += 10;
         return this.paddle.width;
-      case Colors.yellow:
-        this.ball.speed -= 1;
-        this.ball.updateSpeed();
+      case Colors.yellow():
+        this.ball.updateSpeed(-1);
         return this.ball.speed;
-      case Colors.orange:
+      case Colors.orange():
         this.paddle.width += 10;
         return this.paddle.width;
-      case Colors.red:
-        this.ball.speed += 1;
-        this.ball.updateSpeed();
+      case Colors.red():
+        this.ball.updateSpeed(1);
         return this.ball.speed;
       default:
         return null;

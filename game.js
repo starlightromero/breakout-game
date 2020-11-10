@@ -11,7 +11,7 @@ class Game {
 
     this.over = false;
     this.ballRadius = 10;
-    this.startingBallSpeed = 2;
+    this.startingBallSpeed = 1;
     this.brickRowCount = 11;
     this.brickColumnCount = 14;
     this.brickWidth = 75;
@@ -52,13 +52,6 @@ class Game {
     document.addEventListener('keydown', this.keyDownHandler.bind(this), false);
     document.addEventListener('keyup', this.keyUpHandler.bind(this), false);
     document.addEventListener('mousemove', this.mouseMoveHandler.bind(this), false);
-    document.addEventListener('click', () => {
-      if (this.ball.speed === 0) {
-        this.ball.speed = this.startingBallSpeed;
-      } else if (this.over) {
-        document.location.reload();
-      }
-    });
   }
 
   resetBallAndPaddle() {
@@ -101,7 +94,7 @@ class Game {
     }
   }
 
-  static displayYouWin() {
+  displayYouWin() {
     this.ctx.beginPath();
     this.ctx.font = heading;
     this.ctx.fillStyle = Colors.grey();
@@ -110,6 +103,7 @@ class Game {
     this.ctx.fillText(
       youWinString, this.canvas.width / 2 - youWinWidth / 2, this.canvas.height / 2,
     );
+    this.over = true;
   }
 
   movePaddle() {
@@ -178,39 +172,36 @@ class Game {
   checkPowerUp() {
     switch (this.paddle.color) {
       case Colors.violet():
-        this.ball.updateSpeed(5);
+        this.ball.updateSpeed(6);
         return this.ball.speed;
       case Colors.purple():
-        this.ball.updateSpeed(2);
-        return this.ball.speed;
+        this.paddle.width = this.paddleWidth - 60;
+        return this.paddle.width;
       case Colors.blue():
-        this.ball.updateSpeed(4);
+        this.ball.updateSpeed(5);
         return this.ball.speed;
       case Colors.lightBlue():
-        this.paddle.width += 20;
+        this.paddle.width = this.paddleWidth + 60;
         return this.ball.speed;
       case Colors.skyBlue():
-        this.paddle.width -= 10;
+        this.paddle.width = this.paddleWidth - 40;
         return this.paddle.width;
       case Colors.blueGreen():
-        this.paddle.width += 10;
+        this.paddle.width = this.paddleWidth + 40;
         return this.paddle.width;
       case Colors.green():
-        this.paddle.width -= 5;
-        return this.paddle.width;
+        this.ball.updateSpeed(4);
+        return this.ball.speed;
       case Colors.limeGreen():
-        this.paddle.width += 10;
+        this.paddle.width = this.paddleWidth - 20;
         return this.paddle.width;
       case Colors.yellow():
-        this.ball.updateSpeed(1);
-        return this.ball.speed;
-      case Colors.orange():
-        this.paddle.width += 10;
-        return this.paddle.width;
-      case Colors.red():
         this.ball.updateSpeed(3);
         return this.ball.speed;
-      case Colors.grey():
+      case Colors.orange():
+        this.paddle.width = this.paddleWidth + 20;
+        return this.paddle.width;
+      case Colors.red():
         this.ball.updateSpeed(2);
         return this.ball.speed;
       default:
@@ -223,15 +214,6 @@ class Game {
       this.rightPressed = true;
     } else if (e.key === LEFT || e.key === ARROW_LEFT) {
       this.leftPressed = true;
-    } else if (e.keyCode === 32 && this.ball.speed === 0) {
-      if (this.ball.speed === 0) {
-        this.ball.speed = this.startingBallSpeed;
-        this.ball.dx = 1 * this.ball.speed;
-        this.all.dy = -1 * this.ball.speed;
-        this.paddle.x = this.ball.x - this.ball.radius / 2 + this.paddle.width / 2;
-      } else if (this.over) {
-        document.location.reload();
-      }
     }
   }
 
@@ -247,9 +229,6 @@ class Game {
     const relativeX = e.clientX - this.canvas.offsetLeft;
     if (relativeX > 0 && relativeX < this.canvas.width) {
       this.paddle.moveTo(relativeX - this.paddle.width / 2, this.paddleYStart);
-      if (this.ball.speed === 0) {
-        this.ball.x = relativeX;
-      }
     }
   }
 

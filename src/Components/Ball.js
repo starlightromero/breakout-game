@@ -1,3 +1,6 @@
+import Colors from './Colors';
+import Sprite from './Sprite';
+
 class Ball extends Sprite {
   constructor(x = 0, y = 0, speed = 1, radius = 10, color = Colors.grey) {
     super(x, y, radius * 2, radius * 2, color);
@@ -26,3 +29,5 @@ class Ball extends Sprite {
     this.moveBy(this.dx, this.dy);
   }
 }
+
+export default Ball;

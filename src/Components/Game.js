@@ -1,3 +1,10 @@
+import Colors from './Colors';
+import Sprite from './Sprite';
+import Ball from './Ball';
+import Bricks from './Bricks';
+import GameLabel from './GameLabel';
+
+const body = document.querySelector('body');
 const heading = '130px Helvetica';
 const ARROW_RIGHT = 'ArrowRight';
 const ARROW_LEFT = 'ArrowLeft';
@@ -25,7 +32,13 @@ class Game {
     this.paddleYStart = this.canvas.height - this.paddleHeight;
 
     this.ball = new Ball(0, 0, this.startingBallSpeed, this.ballRadius, Colors.grey());
-    this.paddle = new Sprite(this.paddleXStart, this.paddleYStart, this.paddleWidth, this.paddleHeight, Colors.grey());
+    this.paddle = new Sprite(
+      this.paddleXStart,
+      this.paddleYStart,
+      this.paddleWidth,
+      this.paddleHeight,
+      Colors.grey(),
+    );
     this.bricks = new Bricks({
       cols: this.brickColumnCount,
       rows: this.brickRowCount,
@@ -148,6 +161,7 @@ class Game {
         // Hit paddle
         this.ball.dy = -this.ball.dy;
         this.paddle.color = this.ball.color;
+        body.style.backgroundColor = `${this.paddle.color}`;
         this.checkPowerUp();
       } else {
         // Loose a life
@@ -244,9 +258,9 @@ class Game {
       this.ball.move();
       this.movePaddle();
       this.collisionWithCanvasAndPaddle();
-      requestAnimationFrame(() => this.draw('myCanvas'));
+      requestAnimationFrame(() => this.draw('canvas'));
     }
   }
 }
 
-new Game('myCanvas');
+export default Game;

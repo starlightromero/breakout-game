@@ -1,3 +1,6 @@
+import Colors from './Colors';
+import Brick from './Brick';
+
 class Bricks {
   constructor({
     cols, rows, width, height, padding, offsetLeft, offsetTop,
@@ -13,7 +16,7 @@ class Bricks {
     this.init();
   }
 
-  color(r) {
+  static color(r) {
     switch (r) {
       case 0:
         return Colors.violet();
@@ -48,7 +51,7 @@ class Bricks {
       for (let r = 0; r < this.rows; r += 1) {
         const brickX = (c * (this.width + this.padding) + this.offsetLeft);
         const brickY = (r * (this.height + this.padding) + this.offsetTop);
-        this.bricks[c][r] = new Brick(brickX, brickY, this.width, this.height, this.color(r));
+        this.bricks[c][r] = new Brick(brickX, brickY, this.width, this.height, Bricks.color(r));
       }
     }
   }
@@ -64,3 +67,5 @@ class Bricks {
     }
   }
 }
+
+export default Bricks;

@@ -1,3 +1,5 @@
+import Colors from './Colors';
+
 class Sprite {
   constructor(x, y, width = 10, height = 10, color = Colors.grey()) {
     this.x = x;
@@ -25,3 +27,5 @@ class Sprite {
     ctx.closePath();
   }
 }
+
+export default Sprite;

@@ -51,3 +51,5 @@ class Colors {
     return '#FFFFFF';
   }
 }
+
+export default Colors;

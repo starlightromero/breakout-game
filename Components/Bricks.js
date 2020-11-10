@@ -1,8 +1,15 @@
 class Bricks {
-  constructor(cols, rows) {
+  constructor({
+    cols, rows, width, height, padding, offsetLeft, offsetTop,
+  }) {
     this.cols = cols;
     this.rows = rows;
     this.bricks = [];
+    this.width = width;
+    this.height = height;
+    this.padding = padding;
+    this.offsetLeft = offsetLeft;
+    this.offsetTop = offsetTop;
     this.init();
   }
 
@@ -39,9 +46,9 @@ class Bricks {
     for (let c = 0; c < this.cols; c += 1) {
       this.bricks[c] = [];
       for (let r = 0; r < this.rows; r += 1) {
-        const brickX = (c * (brickWidth + brickPadding) + brickOffsetX);
-        const brickY = (c * (brickHeight + brickPadding) + brickOffsetY);
-        this.bricks[c][r] = new Brick(brickX, brickY, brickWidth, brickHeight, objectColor);
+        const brickX = (c * (this.width + this.padding) + this.offsetLeft);
+        const brickY = (c * (this.height + this.padding) + this.offsetTop);
+        this.bricks[c][r] = new Brick(brickX, brickY, this.width, this.height, this.color(r));
       }
     }
   }

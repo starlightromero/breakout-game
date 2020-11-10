@@ -16,29 +16,29 @@ class Bricks {
   color(r) {
     switch (r) {
       case 0:
-        return Colors.violet;
+        return Colors.violet();
       case 1:
-        return Colors.purple;
+        return Colors.purple();
       case 2:
-        return Colors.blue;
+        return Colors.blue();
       case 3:
-        return Colors.lightBlue;
+        return Colors.lightBlue();
       case 4:
-        return Colors.skyBlue;
+        return Colors.skyBlue();
       case 5:
-        return Colors.blueGreen;
+        return Colors.blueGreen();
       case 6:
-        return Colors.green;
+        return Colors.green();
       case 7:
-        return Colors.limeGreen;
+        return Colors.limeGreen();
       case 8:
-        return Colors.yellow;
+        return Colors.yellow();
       case 9:
-        return Colors.orange;
+        return Colors.orange();
       case 10:
-        return Colors.red;
+        return Colors.red();
       default:
-        return Colors.red;
+        return Colors.red();
     }
   }
 
@@ -47,15 +47,15 @@ class Bricks {
       this.bricks[c] = [];
       for (let r = 0; r < this.rows; r += 1) {
         const brickX = (c * (this.width + this.padding) + this.offsetLeft);
-        const brickY = (c * (this.height + this.padding) + this.offsetTop);
+        const brickY = (r * (this.height + this.padding) + this.offsetTop);
         this.bricks[c][r] = new Brick(brickX, brickY, this.width, this.height, this.color(r));
       }
     }
   }
 
   render(ctx) {
-    for (let c = 0; c < this.columnCount; c += 1) {
-      for (let r = 0; r < this.rowCount; r += 1) {
+    for (let c = 0; c < this.cols; c += 1) {
+      for (let r = 0; r < this.rows; r += 1) {
         const brick = this.bricks[c][r];
         if (brick.status === 1) {
           brick.render(ctx);

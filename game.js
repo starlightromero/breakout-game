@@ -11,6 +11,7 @@ class Game {
 
     this.over = false;
     this.ballRadius = 10;
+    this.startingBallSpeed = 2;
     this.brickRowCount = 11;
     this.brickColumnCount = 14;
     this.brickWidth = 75;
@@ -23,7 +24,7 @@ class Game {
     this.paddleXStart = (this.canvas.width - this.paddleWidth) / 2;
     this.paddleYStart = this.canvas.height - this.paddleHeight;
 
-    this.ball = new Ball(0, 0, 1, this.ballRadius, Colors.grey());
+    this.ball = new Ball(0, 0, this.startingBallSpeed, this.ballRadius, Colors.grey());
     this.paddle = new Sprite(this.paddleXStart, this.paddleYStart, this.paddleWidth, this.paddleHeight, Colors.grey());
     this.bricks = new Bricks({
       cols: this.brickColumnCount,
@@ -53,9 +54,7 @@ class Game {
     document.addEventListener('mousemove', this.mouseMoveHandler.bind(this), false);
     document.addEventListener('click', () => {
       if (this.ball.speed === 0) {
-        this.ball.speed = 3;
-        this.ball.dx = 1 * this.ball.speed;
-        this.ball.dy = -1 * this.ball.speed;
+        this.ball.speed = this.startingBallSpeed;
       } else if (this.over) {
         document.location.reload();
       }
@@ -66,7 +65,7 @@ class Game {
     this.ball.color = Colors.grey();
     this.ball.x = this.canvas.width / 2;
     this.ball.y = this.canvas.height - 30;
-    this.ball.speed = 3;
+    this.ball.speed = this.startingBallSpeed;
     this.ball.dx = 1 * this.ball.speed;
     this.ball.dy = -1 * this.ball.speed;
     this.paddle.color = Colors.grey();
@@ -105,7 +104,7 @@ class Game {
   static displayYouWin() {
     this.ctx.beginPath();
     this.ctx.font = heading;
-    this.ctx.fillStyle = Colors.grey;
+    this.ctx.fillStyle = Colors.grey();
     const youWinString = 'YOU WIN!';
     const youWinWidth = this.ctx.measureText(youWinString).width;
     this.ctx.fillText(
@@ -124,7 +123,7 @@ class Game {
   displayGameOver() {
     this.ctx.beginPath();
     this.ctx.font = heading;
-    this.ctx.fillStyle = Colors.grey;
+    this.ctx.fillStyle = Colors.grey();
     const gameoverString = 'GAMEOVER';
     const gameoverWidth = this.ctx.measureText(gameoverString).width;
     this.ctx.fillText(
@@ -139,7 +138,7 @@ class Game {
       || this.ball.x + this.ball.dx < this.ball.radius
     ) {
       this.ball.dx = -this.ball.dx;
-      this.ball.color = Colors.grey;
+      this.ball.color = Colors.grey();
     }
   }
 
@@ -179,13 +178,13 @@ class Game {
   checkPowerUp() {
     switch (this.paddle.color) {
       case Colors.violet():
-        this.ball.updateSpeed(1);
+        this.ball.updateSpeed(5);
         return this.ball.speed;
       case Colors.purple():
-        this.ball.updateSpeed(1);
+        this.ball.updateSpeed(2);
         return this.ball.speed;
       case Colors.blue():
-        this.ball.updateSpeed(-1);
+        this.ball.updateSpeed(4);
         return this.ball.speed;
       case Colors.lightBlue():
         this.paddle.width += 20;
@@ -203,13 +202,16 @@ class Game {
         this.paddle.width += 10;
         return this.paddle.width;
       case Colors.yellow():
-        this.ball.updateSpeed(-1);
+        this.ball.updateSpeed(1);
         return this.ball.speed;
       case Colors.orange():
         this.paddle.width += 10;
         return this.paddle.width;
       case Colors.red():
-        this.ball.updateSpeed(1);
+        this.ball.updateSpeed(3);
+        return this.ball.speed;
+      case Colors.grey():
+        this.ball.updateSpeed(2);
         return this.ball.speed;
       default:
         return null;
@@ -223,7 +225,7 @@ class Game {
       this.leftPressed = true;
     } else if (e.keyCode === 32 && this.ball.speed === 0) {
       if (this.ball.speed === 0) {
-        this.ball.speed = 3;
+        this.ball.speed = this.startingBallSpeed;
         this.ball.dx = 1 * this.ball.speed;
         this.all.dy = -1 * this.ball.speed;
         this.paddle.x = this.ball.x - this.ball.radius / 2 + this.paddle.width / 2;

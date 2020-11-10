@@ -17,9 +17,9 @@ class Ball extends Sprite {
   }
 
   updateSpeed(speed) {
-    this.speed += speed;
-    this.dx = this.speed;
-    this.dy = -this.speed;
+    this.speed = speed;
+    this.dx = Math.sign(this.dx) * this.speed;
+    this.dy = Math.sign(this.dy) * this.speed;
   }
 
   move() {

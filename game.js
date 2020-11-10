@@ -1,6 +1,3 @@
-const canvas = document.getElementById('myCanvas');
-const ctx = canvas.getContext('2d');
-const p = '16px Arial';
 const heading = '130px Helvetica';
 const ARROW_RIGHT = 'ArrowRight';
 const ARROW_LEFT = 'ArrowLeft';
@@ -8,36 +5,59 @@ const RIGHT = 'RIGHT';
 const LEFT = 'LEFT';
 
 class Game {
-  constructor() {
-    this.score = 0;
-    this.lives = 3;
+  constructor(canvasId) {
+    this.canvas = document.getElementById(canvasId);
+    this.ctx = this.canvas.getContext('2d');
+
     this.over = false;
-    this.ball = new Ball(0, 0, 2, -2 ballRadius, objectColor);
-    this.paddle = new Paddle(canvas);
-    this.bricks = new Bricks();
-    this.scoreLabel = new GameLabel('Score: ', 8, 20)
-    this.livesLabel = new GameLabel('Lives: ', canvas.width - 65, 20)
+    this.ballRadius = 10;
+    this.paddleHeight = 10;
+    this.paddleWidth = 75;
+    this.brickRowCount = 3;
+    this.brickColumnCount = 5;
+    this.brickWidth = 75;
+    this.brickHeight = 20;
+    this.brickPadding = 10;
+    this.brickOffsetLeft = 30;
+    this.brickOffsetTop = 30;
+    this.paddleXStart = (this.canvas.width - this.paddleWidth) / 2;
+    this.paddleYStart = this.canvas.height - this.paddleWidth;
+    this.objectColor = 'grey';
+
+    this.ball = new Ball(0, 0, 2, -2, this.ballRadius, this.objectColor);
+    this.paddle = new Paddle(this.canvas);
+    this.bricks = new Bricks({
+      cols: this.brickColumnCount,
+      rows: this.brickRowCount,
+      width: this.brickWidth,
+      height: this.brickHeight,
+      padding: this.brickPadding,
+      offsetLeft: this.brickOffsetLeft,
+      offsetTop: this.brickOffsetTop,
+    });
+    this.scoreLabel = new GameLabel('Score: ', 8, 20);
+    this.livesLabel = new GameLabel('Lives: ', this.canvas.width - 65, 20);
 
     this.rightPressed = false;
     this.leftPressed = false;
 
-    this.setup()
-    this.draw()
+    this.setup();
+    this.draw();
   }
 
   setup() {
-    this.livesLabel.value = 3
-    this.resetBallAndPaddle()
+    this.livesLabel.value = 3;
+    this.resetBallAndPaddle();
 
     document.addEventListener('keydown', this.keyDownHandler.bind(this), false);
     document.addEventListener('keyup', this.keyUpHandler.bind(this), false);
     document.addEventListener('mousemove', this.mouseMoveHandler.bind(this), false);
     document.addEventListener('click', () => {
-      if (ball.speed === 0) {
-        ball.speed = 3;
-        ball.dx = 1 * ball.speed;
-        ball.dy = -1 * ball.speed;
-      } else if (game.over) {
+      if (this.ball.speed === 0) {
+        this.ball.speed = 3;
+        this.ball.dx = 1 * this.ball.speed;
+        this.ball.dy = -1 * this.ball.speed;
+      } else if (this.over) {
         document.location.reload();
       }
     });
@@ -45,13 +65,13 @@ class Game {
 
   resetBallAndPaddle() {
     this.ball.color = Colors.grey;
-    this.ball.x = canvas.width / 2;
-    this.ball.y = canvas.height - 30;
+    this.ball.x = this.canvas.width / 2;
+    this.ball.y = this.canvas.height - 30;
     this.ball.speed = 3;
     this.ball.dx = 1 * this.ball.speed;
     this.ball.dy = -1 * this.ball.speed;
     this.paddle.color = Colors.grey;
-    this.paddle.x = paddleXStart;
+    this.paddle.x = this.paddleXStart;
   }
 
   collisionBricks() {
@@ -84,39 +104,39 @@ class Game {
   }
 
   static displayYouWin() {
-    ctx.beginPath();
-    ctx.font = heading;
-    ctx.fillStyle = Colors.grey;
+    this.ctx.beginPath();
+    this.ctx.font = heading;
+    this.ctx.fillStyle = Colors.grey;
     const youWinString = 'YOU WIN!';
-    const youWinWidth = ctx.measureText(youWinString).width;
-    ctx.fillText(
-      youWinString, canvas.width / 2 - youWinWidth / 2, canvas.height / 2,
+    const youWinWidth = this.ctx.measureText(youWinString).width;
+    this.ctx.fillText(
+      youWinString, this.canvas.width / 2 - youWinWidth / 2, this.canvas.height / 2,
     );
   }
 
   movePaddle() {
-    if (this.rightPressed && this.paddle.x < canvas.width - this.paddle.width) {
-      this.paddle.moveBy(7, 0)
+    if (this.rightPressed && this.paddle.x < this.canvas.width - this.paddle.width) {
+      this.paddle.moveBy(7, 0);
     } else if (this.leftPressed && this.paddle.x > 0) {
-      this.paddle.moveBy(-7, 0)
+      this.paddle.moveBy(-7, 0);
     }
   }
 
   displayGameOver() {
-    ctx.beginPath();
-    ctx.font = heading;
-    ctx.fillStyle = Colors.grey;
+    this.ctx.beginPath();
+    this.ctx.font = heading;
+    this.ctx.fillStyle = Colors.grey;
     const gameoverString = 'GAMEOVER';
-    const gameoverWidth = ctx.measureText(gameoverString).width;
-    ctx.fillText(
-      gameoverString, canvas.width / 2 - gameoverWidth / 2, canvas.height / 2,
+    const gameoverWidth = this.ctx.measureText(gameoverString).width;
+    this.ctx.fillText(
+      gameoverString, this.canvas.width / 2 - gameoverWidth / 2, this.canvas.height / 2,
     );
     this.over = true;
   }
 
   collisionWall() {
     if (
-      this.ball.x + this.ball.dx > canvas.width - this.ball.radius
+      this.ball.x + this.ball.dx > this.canvas.width - this.ball.radius
       || this.ball.x + this.ball.dx < this.ball.radius
     ) {
       this.ball.dx = -this.ball.dx;
@@ -131,30 +151,30 @@ class Game {
   }
 
   collisionBottomAndPaddle() {
-    if (this.ball.y + this.ball.dy > canvas.height - this.ball.radius) {
+    if (this.ball.y + this.ball.dy > this.canvas.height - this.ball.radius) {
       if (this.ball.x > this.paddle.x && this.ball.x < this.paddle.x + this.paddle.width) {
         // Hit paddle
-        this.ball.dy = -this.ball.dy
-        this.paddle.color = this.ball.color
-        this.checkPowerUp()
+        this.ball.dy = -this.ball.dy;
+        this.paddle.color = this.ball.color;
+        this.checkPowerUp();
       } else {
         // Loose a life
-        this.livesLabel.value -= 1
+        this.livesLabel.value -= 1;
         if (this.livesLabel.value < 1) {
           // Game Over
-          this.displayGameOver()
-          this.resetBallAndPaddle()
+          this.displayGameOver();
+          this.resetBallAndPaddle();
         } else {
-          this.resetBallAndPaddle()
+          this.resetBallAndPaddle();
         }
       }
     }
   }
 
   collisionWithCanvasAndPaddle() {
-    this.collisionWall()
-    this.collisionTop()
-    this.collisionBottomAndPaddle()
+    this.collisionWall();
+    this.collisionTop();
+    this.collisionBottomAndPaddle();
   }
 
   checkPowerUp() {
@@ -217,7 +237,7 @@ class Game {
         document.location.reload();
       }
     }
-  };
+  }
 
   keyUpHandler(e) {
     if (e.key === RIGHT || e.key === ARROW_RIGHT) {
@@ -225,33 +245,33 @@ class Game {
     } else if (e.key === LEFT || e.key === ARROW_LEFT) {
       this.leftPressed = false;
     }
-  };
+  }
 
   mouseMoveHandler(e) {
-    const relativeX = e.clientX - canvas.offsetLeft;
-    if (relativeX > 0 && relativeX < canvas.width) {
-      this.paddle.moveTo(relativeX - this.paddle.width / 2, paddleYStart)
+    const relativeX = e.clientX - this.canvas.offsetLeft;
+    if (relativeX > 0 && relativeX < this.canvas.width) {
+      this.paddle.moveTo(relativeX - this.paddle.width / 2, this.paddleYStart);
       if (this.ball.speed === 0) {
         this.ball.x = relativeX;
       }
     }
-  };
+  }
 
   draw() {
     if (!this.over) {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      this.bricks.render(ctx);
-      this.ball.render(ctx);
-      this.paddle.render(ctx);
-      this.scoreLabel.render(ctx);
-      this.livesLabel.render(ctx);
-      this.collisionBricks()
-      this.ball.move()
-      this.movePaddle()
-      this.collisionWithCanvasAndPaddle()
-      requestAnimationFrame(() => this.draw());
+      this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+      this.bricks.render(this.ctx);
+      this.ball.render(this.ctx);
+      this.paddle.render(this.ctx);
+      this.scoreLabel.render(this.ctx);
+      this.livesLabel.render(this.ctx);
+      this.collisionBricks();
+      this.ball.move();
+      this.movePaddle();
+      this.collisionWithCanvasAndPaddle();
+      requestAnimationFrame(() => this.draw('myCanvas'));
     }
   }
 }
 
-new Game();
+new Game('myCanvas');

@@ -34,8 +34,8 @@ class Game {
       offsetLeft: this.brickOffsetLeft,
       offsetTop: this.brickOffsetTop,
     });
-    this.scoreLabel = new GameLabel('Score: ', 8, 20, this.objectColor);
-    this.livesLabel = new GameLabel('Lives: ', this.canvas.width - 65, 20, this.objectColor);
+    this.scoreLabel = new GameLabel('Score: ', 8, 20, Colors.white());
+    this.livesLabel = new GameLabel('Lives: ', this.canvas.width - 65, 20, Colors.white());
 
     this.rightPressed = false;
     this.leftPressed = false;

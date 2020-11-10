@@ -44,6 +44,10 @@ class Colors {
   }
 
   static grey() {
-    return '#dadada';
+    return '#DADADA';
+  }
+
+  static white() {
+    return '#FFFFFF';
   }
 }
